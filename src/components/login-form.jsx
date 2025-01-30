@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import wolfImage from "/wolf.png";
+import wolfImage from "/wolf-dark.png";
 
 export function LoginForm({
   onSubmit,

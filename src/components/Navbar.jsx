@@ -1,17 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, Home, Info, Briefcase, Mail } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import profileIcon from '/profile.png'
-import logo from '/wolf.png'
+import lightLogo from '/wolf-light.png'
+import darkLogo from '/wolf-dark.png'
+import { NavUser } from "./NavUser";
+import ThemeToggle from "@/components/ThemeToggle";
 
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  
+  // Watch for class changes on <html> (real-time theme updates)
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
+    });
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 bg-white shadow-md">
+    <nav className="flex items-center justify-between px-6 py-4 shadow-md">
       {/* Mobile: Hamburger Menu on Left */}
       <div className="md:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
@@ -56,11 +71,15 @@ export default function Navbar() {
       </div>
 
       {/* Logo */}
-      <div className="text-xl font-bold absolute left-1/2 transform -translate-x-1/2 md:static md:translate-x-0">
+      <div className="text-xl font-bold absolute left-1/2 transform -translate-x-1/2 md:static md:translate-x-0 flex items-center space-x-2">
         <Avatar>
-          <AvatarImage src={logo} alt="Profile" />
+          <AvatarImage
+            src={theme === "dark" ? lightLogo : darkLogo}
+            alt="Profile"
+          />
           <AvatarFallback>Logo</AvatarFallback>
         </Avatar>
+        <span className="text-3xl">AV</span>
       </div>
 
       {/* Desktop Navigation */}
@@ -71,11 +90,11 @@ export default function Navbar() {
         <Button variant="ghost">Contact</Button>
       </div>
 
-      {/* Profile Icon */}
-      <Avatar>
-        <AvatarImage src={profileIcon} alt="Profile" />
-        <AvatarFallback>Aman</AvatarFallback>
-      </Avatar>
+      {/* User */}
+      <div className="flex items-center space-x-4">
+        <ThemeToggle />
+        <NavUser />
+      </div>
     </nav>
   );
 }
