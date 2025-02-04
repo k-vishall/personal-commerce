@@ -6,8 +6,8 @@ function LoginPage() {
 
   const onSubmit = (formData) => {
     console.log("onSubmit -> " + formData);
-    // navigate("/dashboard"); 
-    navigate("/createItem"); 
+    navigate("/dashboard"); 
+    // navigate("/createItem"); 
   }
 
   return (
