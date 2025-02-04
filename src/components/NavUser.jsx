@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import profileIcon from "/profile.png";
+import { useNavigate } from "react-router-dom";
 
 const handleOrdersClick = () => {
   console.log("Redirecting to Orders...");
@@ -33,6 +34,8 @@ const handleLogout = () => {
 };
 
 export function NavUser() {
+  const navigate = useNavigate();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,6 +48,10 @@ export function NavUser() {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => navigate("/createItem")}>
+            Create Item
+            <DropdownMenuShortcut>⇧⌘C</DropdownMenuShortcut>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleOrdersClick}>
             Orders
             <DropdownMenuShortcut>⇧⌘O</DropdownMenuShortcut>
