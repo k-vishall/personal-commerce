@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, Home, Info, Briefcase, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom"; 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,7 +13,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
-  
+  const navigate = useNavigate(); 
+
   // Watch for class changes on <html> (real-time theme updates)
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -40,14 +42,14 @@ export default function Navbar() {
               <Button
                 variant="ghost"
                 className="justify-start"
-                onClick={() => setOpen(false)}
+                onClick={() => navigate("/")}
               >
                 <Home className="w-5 h-5 mr-2" /> Home
               </Button>
               <Button
                 variant="ghost"
                 className="justify-start"
-                onClick={() => setOpen(false)}
+                onClick={() => navigate("/about")}
               >
                 <Info className="w-5 h-5 mr-2" /> About
               </Button>
@@ -84,8 +86,8 @@ export default function Navbar() {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex space-x-6">
-        <Button variant="ghost">Home</Button>
-        <Button variant="ghost">About</Button>
+        <Button variant="ghost" onClick={() => navigate("/")}>Home</Button>
+        <Button variant="ghost" onClick={() => navigate("/about")}>About</Button>
         <Button variant="ghost">Services</Button>
         <Button variant="ghost">Contact</Button>
       </div>
