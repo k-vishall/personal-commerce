@@ -1,7 +1,6 @@
-import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
-import { ItemCardWithImg } from "./components/item-card-with-img";
-import { BannerCarousel } from "./components/BannerCarousel";
+import { ItemCardWithImg } from "../components/item-card-with-img";
+import { BannerCarousel } from "../components/BannerCarousel";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -62,7 +61,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="">
           <BannerCarousel />
