@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
-import { ItemCardWithImg } from "./components/item-with-img-card";
+import { ItemCardWithImg } from "./components/item-card-with-img";
+import { BannerCarousel } from "./components/BannerCarousel";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -63,6 +64,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="">
+          <BannerCarousel />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {extendedProductData.map((product, index) => (
             <ItemCardWithImg
