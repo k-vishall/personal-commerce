@@ -16,25 +16,25 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import profileIcon from "/profile.png";
 import { useNavigate } from "react-router-dom";
 
-const handleOrdersClick = () => {
-  console.log("Redirecting to Orders...");
-};
-
-const handleWishlistClick = () => {
-  console.log("Redirecting to Wish List...");
-};
-
-const handlePromotionsClick = () => {
-  console.log("Viewing Promotions...");
-};
-
-// Function to handle log out
-const handleLogout = () => {
-  console.log("Logging out...");
-};
-
 export function NavUser() {
   const navigate = useNavigate();
+
+  const handleOrdersClick = () => {
+    console.log("Redirecting to Orders...");
+  };
+
+  const handleWishlistClick = () => {
+    console.log("Redirecting to Wish List...");
+  };
+
+  const handlePromotionsClick = () => {
+    console.log("Viewing Promotions...");
+  };
+
+  // Function to handle log out
+  const handleLogout = () => {
+    navigate("/login");
+  };
 
   return (
     <DropdownMenu>
@@ -51,6 +51,10 @@ export function NavUser() {
           <DropdownMenuItem onClick={() => navigate("/createItem")}>
             Create Item
             <DropdownMenuShortcut>⇧⌘C</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/createCategory")}>
+            Create Category
+            <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleOrdersClick}>
             Orders

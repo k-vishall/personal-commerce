@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,15 +10,28 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import wolfImage from "/wolf-dark.png";
-
+import lightLogo from '/wolf-light.png'
+import darkLogo from '/wolf-dark.png'
 export function LoginForm({
   onSubmit,
   className,
   ...props
 }) {
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  // Watch for class changes on <html> (real-time theme updates)
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
+    });
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    (<div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form className="p-6 md:p-8">
@@ -49,7 +63,11 @@ export function LoginForm({
                 </div>
                 <Input id="password" type="password" required />
               </div>
-              <Button  onClick={() => onSubmit("SOMETHING")} type="submit" className="w-full">
+              <Button
+                onClick={() => onSubmit("SOMETHING")}
+                type="submit"
+                className="w-full"
+              >
                 Login
               </Button>
               {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -95,7 +113,10 @@ export function LoginForm({
             </div>
           </form>
           <div className="relative hidden bg-muted md:block">
-            <img src={wolfImage} alt="" className="absolute inset-0 h-full w-full object-contain dark:brightness-[0.8] dark:grayscale"
+            <img
+              src={theme === "dark" ? lightLogo : darkLogo}
+              alt=""
+              className="absolute inset-0 h-full w-full object-contain dark:brightness-[0.8] dark:grayscale"
             />
           </div>
         </CardContent>
@@ -104,6 +125,6 @@ export function LoginForm({
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
       </div> */}
-    </div>)
+    </div>
   );
 }
