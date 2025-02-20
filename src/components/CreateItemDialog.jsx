@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, updateItem } from "../features/item/itemSlice";
+import { nanoid } from "@reduxjs/toolkit";
 import { toast } from "sonner"
 import {
   Dialog,
@@ -15,56 +18,81 @@ import { Label } from "./ui/label";
 import { CirclePlus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
-export function CreateItemDialog() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [originalPrice, setOriginalPrice] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [category, setCategory] = useState("");
+export function CreateItemDialog({ open, setOpen, editItem = null }) {
+  const dispatch = useDispatch();
 
-  const discountedPrice = Math.max(originalPrice - discountAmount, 0);
-  const calculatedDiscountPercentage = originalPrice > 0 ? (discountAmount / originalPrice) * 100 : 0;
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [price, setPrice] = useState(0);
+  const [discAmount, setDiscAmount] = useState(0);
+  const [discPercent, setDiscPercent] = useState(0);
+  const [category, setCategory] = useState("Pizza");
+  const [imageUrl, setImageUrl] = useState("");
+  const [rating, setRating] = useState(0.0);
+  const netPrice = Math.max(price - discAmount, 0);
+
+  // const discountedPrice = Math.max(originalPrice - discountAmount, 0);
+  // const calculatedDiscountPercentage = originalPrice > 0 ? (discountAmount / originalPrice) * 100 : 0;
+  
+  useEffect(() => {
+    if (editItem) {
+      setName(editItem.name);
+      setDesc(editItem.desc);
+      setPrice(editItem.price);
+      setDiscAmount(editItem.discAmount);
+      setDiscPercent(editItem.discPercent);
+      setCategory(editItem.category);
+      setImageUrl(editItem.imageUrl);
+      setRating(editItem.rating);
+    }
+  }, [editItem]);
+
 
   const handleDiscountAmountChange = (amount) => {
-    setDiscountAmount(amount);
-    setDiscountPercentage(amount > 0 ? (amount / originalPrice) * 100 : 0);
+    setDiscAmount(amount);
+    setDiscPercent(amount > 0 ? (amount / price) * 100 : 0);
   };
 
   const handleDiscountPercentageChange = (percentage) => {
-    setDiscountPercentage(percentage);
-    setDiscountAmount(originalPrice * (percentage / 100));
+    setDiscPercent(percentage);
+    setDiscAmount(price * (percentage / 100));
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend or state management
-    console.log({ name, description, originalPrice, discountAmount, discountPercentage, discountedPrice, category });
+    const newItem = {
+      id: editItem ? editItem.id : Date.now(),
+      name,
+      desc,
+      price,
+      discPercent,
+      discAmount,
+      netPrice,
+      category,
+      imageUrl,
+      rating: editItem ? editItem.rating : 4.0,
+    };
+
+    if (editItem) {
+      dispatch(updateItem({ id: editItem.id, newItem }));
+      toast("Item updated successfully!");
+    } else {
+      dispatch(addItem(newItem));
+      toast("Item added successfully!");
+    }
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          onClick={() => {
-            toast("Create Item Clicked...", {
-              description: "No Description",
-              action: {
-                label: "Ok",
-                onClick: () => console.log("Button Create Item Clicked"),
-              },
-            });
-          }}
-        >
-          <CirclePlus />
-          Create Item
-        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create New Item</DialogTitle>
+          <DialogTitle>{editItem ? "Edit Item" : "Create New Item"}</DialogTitle>
           <DialogDescription>
-            Add a new item to your inventory. Fill out the details below.
+            {editItem ? "" :"Add a new item to your inventory. Fill out the details below."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -85,9 +113,9 @@ export function CreateItemDialog() {
                 Description
               </Label>
               <Input
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                id="desc"
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
                 className="col-span-3"
               />
             </div>
@@ -109,25 +137,36 @@ export function CreateItemDialog() {
               </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="originalPrice" className="text-right">
-                Price
+              <Label htmlFor="imgUrl" className="text-right">
+                Image Url
               </Label>
               <Input
-                id="originalPrice"
-                type="number"
-                value={originalPrice}
-                onChange={(e) => setOriginalPrice(Number(e.target.value))}
+                id="imgUrl"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
                 className="col-span-3"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="discountAmount" className="text-right">
+              <Label htmlFor="price" className="text-right">
+                Price
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="discAmount" className="text-right">
                 Disc Amount
               </Label>
               <Input
-                id="discountAmount"
+                id="discAmount"
                 type="number"
-                value={discountAmount}
+                value={discAmount}
                 onChange={(e) =>
                   handleDiscountAmountChange(Number(e.target.value))
                 }
@@ -135,13 +174,13 @@ export function CreateItemDialog() {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="discountPercentage" className="text-right">
-                Disc %
+              <Label htmlFor="discPercent" className="text-right">
+                Discount %
               </Label>
               <Input
-                id="discountPercentage"
+                id="discPercent"
                 type="number"
-                value={discountPercentage}
+                value={discPercent}
                 onChange={(e) =>
                   handleDiscountPercentageChange(Number(e.target.value))
                 }
@@ -149,20 +188,20 @@ export function CreateItemDialog() {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="discountedPrice" className="text-right">
+              <Label htmlFor="netPrice" className="text-right">
                 Net Price
               </Label>
               <Input
-                id="discountedPrice"
+                id="netPrice"
                 type="number"
-                value={discountedPrice}
+                value={netPrice}
                 readOnly
                 className="col-span-3"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Create Item</Button>
+            <Button type="submit">{editItem ? "Update Item" : "Create Item"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

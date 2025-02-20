@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner"
+import { useSelector } from "react-redux";
+import { CreateItemDialog } from "@/components/CreateItemDialog";
+
 import {
   flexRender,
   getCoreRowModel,
@@ -42,81 +45,49 @@ import {
   PaginationPrevious,
 } from "./ui/pagination";
 
-const itemsData = [
-  { id: 1, name: "Product A", desc: "Description A", price: 100, discPercent: 10, category: "Category 1" },
-  { id: 2, name: "Product B", desc: "Description B", price: 200, discPercent: 15, category: "Category 2" },
-  { id: 3, name: "Product C", desc: "Description C", price: 300, discPercent: 20, category: "Category 3" },
-];
-
-const extendedItemsData = [...Array(80)].map((_, index) => {
-    const item = itemsData[index % itemsData.length];
-    return {
-      ...item,
-      id: `${index + 1}`,
-      name: `${item.name} #${index + 4}`,
-      desc: `${item.desc} #${index + 4 + 1}`,
-      price: item.price + (index + 4 % 3) * 10,
-      discPercent: item.discPercent + (index + 4 % 3) * 20,
-      category: `${item.category} #${index + 4 + 1}`,
-    };
-  });
 
   export function ItemTable() {
-    const [data, setData] = useState(extendedItemsData);
+    const itemsData = useSelector((state) => state.items.items) || [];
+    const [dialogOpen, setDialogOpen] = useState(false); 
+    const [selectedItem, setSelectedItem] = useState(null); // for delete or edit
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+      setData(
+        itemsData.map((item) => ({
+          id: item.id,
+          name: item.name,
+          desc: item.desc,
+          price: item.price,
+          discPercent: item.discPercent,
+          category: item.category,
+          imageUrl: item.imageUrl,
+          rating: item.rating,
+          discAmount: item.discAmount,
+          netPrice: item.netPrice,
+        }))
+      );
+    }, [itemsData]); // Re-run when itemsData changes
+
     const [pageSize, setPageSize] = useState(10);  // Set initial page size
     const [pageIndex, setPageIndex] = useState(0); // Track current page index
 
     const columns = [
       { accessorKey: "id", header: "ID", cell: ({ row }) => row.original.id },
-      {
-        accessorKey: "name",
-        header: "Name",
-        cell: ({ row }) => row.original.name,
-      },
-      {
-        accessorKey: "desc",
-        header: "Description",
-        cell: ({ row }) => row.original.desc,
-      },
-      {
-        accessorKey: "price",
-        header: "Price",
-        cell: ({ row }) => `$${row.original.price}`,
-      },
-      {
-        accessorKey: "discPercent",
-        header: "Discount %",
-        cell: ({ row }) => `${row.original.discPercent}%`,
-      },
-      {
-        accessorKey: "discAmount",
-        header: "Discount Amount",
-        cell: ({ row }) =>
-          `$${((row.original.price * row.original.discPercent) / 100).toFixed(
-            2
-          )}`,
-      },
-      {
-        accessorKey: "discountedPrice",
-        header: "Discounted Price",
-        cell: ({ row }) =>
-          `$${(
-            row.original.price -
-            (row.original.price * row.original.discPercent) / 100
-          ).toFixed(2)}`,
-      },
-      {
-        accessorKey: "category",
-        header: "Category",
-        cell: ({ row }) => row.original.category,
-      },
+      { accessorKey: "name", header: "Name", cell: ({ row }) => row.original.name,},
+      { accessorKey: "desc", header: "Description",cell: ({ row }) => row.original.desc,},
+      { accessorKey: "price", header: "Price",cell: ({ row }) => `$${row.original.price}`,},
+      { accessorKey: "discPercent", header: "Discount %",cell: ({ row }) => `${row.original.discPercent}%`,},
+      { accessorKey: "discAmount", header: "Discount Amount", cell: ({ row }) => `$${row.original.discAmount}` },
+      { accessorKey: "netPrice", header: "Net Price", cell: ({ row }) => `$${row.original.netPrice}` },
+      { accessorKey: "category", header: "Category",cell: ({ row }) => row.original.category,},
       {
         id: "editAction",
         header: "Edit",
         cell: ({ row }) => (
           <Button
             className="bg-blue-600"
-            onClick={() => handleEdit(row.original.id)}
+            onClick={() => handleEdit(row.original)}
           >
             <Pencil color="white" />
           </Button>
@@ -128,7 +99,7 @@ const extendedItemsData = [...Array(80)].map((_, index) => {
         cell: ({ row }) => (
           <Button
             variant="destructive"
-            onClick={() => handleDelete(row.original.id)}
+            onClick={() => handleDelete(row.original)}
           >
             <Trash2 />
           </Button>
@@ -136,8 +107,8 @@ const extendedItemsData = [...Array(80)].map((_, index) => {
       },
     ];
   
-    const handleDelete = (id) => {
-      setData((prevData) => prevData.filter((item) => item.id !== id));
+    const handleDelete = (selectedItem) => {
+      setData((prevData) => prevData.filter((item) => item.id !== selectedItem.id));
       toast("Item Delete Clicked...", {
         description: "No Description",
         action: {
@@ -147,14 +118,10 @@ const extendedItemsData = [...Array(80)].map((_, index) => {
       })
     };
 
-    const handleEdit = (id) => {
-      toast("Item Edit Clicked...", {
-        description: "No Description",
-        action: {
-          label: "Ok",
-          onClick: () => console.log("Button Item Edit Clicked"),
-        },
-      })
+    const handleEdit = (selectedItem) => {
+      setSelectedItem(selectedItem); 
+      setDialogOpen(true);
+      console.log("Edit Selected Item", selectedItem);
     };
   
     const table = useReactTable({
@@ -175,6 +142,7 @@ const extendedItemsData = [...Array(80)].map((_, index) => {
 
     return (
       <div className="w-full">
+        <CreateItemDialog open={dialogOpen} setOpen={setDialogOpen} editItem={selectedItem} />
         <div className="flex items-center py-4">
           <Input
             placeholder="Find Item..."

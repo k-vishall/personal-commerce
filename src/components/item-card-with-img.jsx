@@ -13,12 +13,14 @@ export function ItemCardWithImg({ product, className, ...props }) {
 
   // Destructure product details with fallback values in case of null or undefined
   const {
-    title = "Product Title", 
-    description = "Product Description", 
-    price = 0, 
-    originalPrice = 0, 
-    discount = "No Discount", 
-    imageUrl = "/placeholder.svg?height=300&width=300", 
+    name = "Product Name",
+    desc = "Product Description",
+    price = 0,
+    discPercent = 0,
+    discAmount= 0,
+    netPrice= 0,
+    category = "Un categorized",
+    imageUrl = "/placeholder.svg?height=300&width=300",
     rating = 0
   } = product || {}
 
@@ -27,24 +29,28 @@ export function ItemCardWithImg({ product, className, ...props }) {
       <div className="relative aspect-square overflow-hidden">
         <motion.img
           src={imageUrl}
-          alt={title}
+          alt={name}
           className="object-cover w-full h-full transition-transform duration-300 ease-in-out"
           whileHover={{ scale: 1.05 }}
         />
-        {discount && <Badge className="absolute top-2 right-2 bg-white text-black font-semibold">{discount}</Badge>}
+        {discPercent > 0 && (
+          <Badge className="absolute top-2 right-2 bg-white text-black font-semibold">
+            {discPercent}% OFF
+          </Badge>
+        )}
       </div>
 
       <CardHeader className="flex flex-col flex-grow">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription className="line-clamp-2">{description}</CardDescription>
+        <CardTitle>{name}</CardTitle>
+        <CardDescription className="line-clamp-2">{desc}</CardDescription>
       </CardHeader>
 
       <CardContent >
         <div className="flex justify-between items-center">
           <div className="space-x-2">
-            <span className="text-2xl font-bold">₹{price}</span>
-            {originalPrice > price && (
-              <span className="text-sm text-muted-foreground line-through">₹{originalPrice}</span>
+            <span className="text-2xl font-bold">₹{netPrice}</span>
+            {discPercent > 0 && (
+              <span className="text-sm text-muted-foreground line-through">₹{price}</span>
             )}
           </div>
           <div className="text-sm text-muted-foreground">★★★★☆ ({rating})</div>
