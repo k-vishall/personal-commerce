@@ -13,6 +13,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  ShoppingBag,
+  ShoppingCart,
+  ScrollText,
+  IndianRupee,
+  MapPinHouse,
+  Headset,
+  LogOut,
+  TrendingUp ,
+  ChartBarStacked ,
+  Gift ,
+} from "lucide-react";
 import profileIcon from "/profile.png";
 import { useNavigate } from "react-router-dom";
 
@@ -49,34 +61,34 @@ export function NavUser() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => navigate("/createItem")}>
-            Create Item
+            <ShoppingBag /> Create Item
             <DropdownMenuShortcut>⇧⌘C</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/createCategory")}>
-            Create Category
+            <ChartBarStacked /> Create Category
             <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleOrdersClick}>
-            Orders
+            <ShoppingCart/> Cart
             <DropdownMenuShortcut>⇧⌘O</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleWishlistClick}>
-            Wish List
+            <ScrollText/> Wish List
             <DropdownMenuShortcut>⌘W</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => console.log("Payment Methods")}>
-            Payment Methods
+            <IndianRupee /> Payment Methods
             <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => console.log("Manage Addresses")}>
-            Addresses
+            <MapPinHouse /> Addresses
             <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={handlePromotionsClick}>
-            Promotions
+            <TrendingUp /> Promotions
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>New Arrivals</DropdownMenuSubTrigger>
@@ -104,17 +116,17 @@ export function NavUser() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => console.log("Contacting Support")}>
-          Customer Support
+          <Headset /> Customer Support
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled
           onClick={() => console.log("Checking Gift Cards")}
         >
-          Gift Cards
+         <Gift /> Gift Cards
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
-          Log out
+          <LogOut /> Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

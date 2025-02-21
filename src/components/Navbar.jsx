@@ -53,7 +53,7 @@ export default function Navbar() {
               >
                 <Info className="w-5 h-5 mr-2" /> About
               </Button>
-              <Button
+              {/* <Button
                 variant="ghost"
                 className="justify-start"
                 onClick={() => setOpen(false)}
@@ -66,7 +66,7 @@ export default function Navbar() {
                 onClick={() => setOpen(false)}
               >
                 <Mail className="w-5 h-5 mr-2" /> Contact
-              </Button>
+              </Button> */}
             </div>
           </SheetContent>
         </Sheet>
@@ -88,8 +88,8 @@ export default function Navbar() {
       <div className="hidden md:flex space-x-6">
         <Button variant="ghost" onClick={() => navigate("/")}>Home</Button>
         <Button variant="ghost" onClick={() => navigate("/about")}>About</Button>
-        <Button variant="ghost">Services</Button>
-        <Button variant="ghost">Contact</Button>
+        {/* <Button variant="ghost">Services</Button>
+        <Button variant="ghost">Contact</Button> */}
       </div>
 
       {/* User */}
