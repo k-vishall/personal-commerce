@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner"
+import { useDispatch, useSelector } from "react-redux";
+import { removeCategory } from "../features/category/categorySlice";
+import { CreateCategoryDialog } from "@/components/CreateCategoryDialog";
 import {
   flexRender,
   getCoreRowModel,
@@ -42,26 +45,24 @@ import {
   PaginationPrevious,
 } from "./ui/pagination";
 
-const categoriesData = [
-  { id: 1, name: "Electronics", desc: "Latest gadgets and devices"},
-  { id: 2, name: "Fashion", desc: "Clothing, shoes, and accessories"},
-  { id: 3, name: "Home & Kitchen", desc: "Furniture, appliances, and decor"},
-  { id: 4, name: "Beauty & Personal Care", desc: "Cosmetics and skincare products"},
-  { id: 5, name: "Health & Wellness", desc: "Supplements, fitness, and medical equipment"},
-  { id: 6, name: "Toys & Games", desc: "Entertainment for kids and adults"},
-  { id: 7, name: "Automotive", desc: "Car accessories and tools"},
-  { id: 8, name: "Sports & Outdoors", desc: "Athletic gear and outdoor equipment"},
-  { id: 9, name: "Books & Stationery", desc: "Novels, textbooks, and office supplies"},
-  { id: 10, name: "Pet Supplies", desc: "Food and accessories for pets"},
-  { id: 11, name: "Jewelry & Watches", desc: "Luxury and everyday wearables"},
-  { id: 12, name: "Groceries & Gourmet", desc: "Food, beverages, and kitchen essentials"},
-  { id: 13, name: "Gaming", desc: "Consoles, accessories, and video games"},
-  { id: 14, name: "Office Supplies", desc: "Essentials for workspace and productivity"},
-  { id: 15, name: "Baby Products", desc: "Items for newborns and toddlers"},
-];
-
   export function CategoryTable() {
-    const [data, setData] = useState(categoriesData);
+    const dispatch = useDispatch();
+
+    const categoriesData = useSelector((state) => state.categories.categories) || [];
+    const [dialogOpen, setDialogOpen] = useState(false); 
+    const [selectedCategory, setSelectedCategory] = useState(null); // for delete or edit
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+      setData(
+        categoriesData.map((category) => ({
+          id: category.id,
+          name: category.name,
+          desc: category.desc,
+        }))
+      );
+    }, [categoriesData]); 
+
     const [pageSize, setPageSize] = useState(10);  // Set initial page size
     const [pageIndex, setPageIndex] = useState(0); // Track current page index
 
@@ -83,7 +84,7 @@ const categoriesData = [
         cell: ({ row }) => (
           <Button
             className="bg-blue-600"
-            onClick={() => handleEdit(row.original.id)}
+            onClick={() => handleEdit(row.original)}
           >
             <Pencil color="white" />
           </Button>
@@ -95,7 +96,7 @@ const categoriesData = [
         cell: ({ row }) => (
           <Button
             variant="destructive"
-            onClick={() => handleDelete(row.original.id)}
+            onClick={() => handleDelete(row.original)}
           >
             <Trash2 />
           </Button>
@@ -103,25 +104,13 @@ const categoriesData = [
       },
     ];
   
-    const handleDelete = (id) => {
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast("Category Delete Clicked...", {
-        description: "No Description",
-        action: {
-          label: "Ok",
-          onClick: () => console.log("Button Category Delete Clicked"),
-        },
-      })
+    const handleDelete = (selectedCategory) => {
+      dispatch(removeCategory(selectedCategory.id));
     };
 
-    const handleEdit = (id) => {
-      toast("Category Edit Clicked...", {
-        description: "No Description",
-        action: {
-          label: "Ok",
-          onClick: () => console.log("Button Category Edit Clicked"),
-        },
-      })
+    const handleEdit = (selectedCategory) => {
+      setSelectedCategory(selectedCategory);
+      setDialogOpen(true);
     };
   
     const table = useReactTable({
@@ -142,6 +131,7 @@ const categoriesData = [
 
     return (
       <div className="w-full">
+        <CreateCategoryDialog open={dialogOpen} setOpen={setDialogOpen} editCategory={selectedCategory} />
         <div className="flex items-center py-4">
           <Input
             placeholder="Find Category..."
