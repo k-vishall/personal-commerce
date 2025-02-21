@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { CirclePlus } from "lucide-react";
@@ -21,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 export function CreateItemDialog({ open, setOpen, editItem = null }) {
   const dispatch = useDispatch();
 
+  const [allowExtraDiscount, setAllowExtraDiscount] = useState(false);
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(0);
@@ -29,7 +31,8 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
   const [category, setCategory] = useState("Pizza");
   const [imageUrl, setImageUrl] = useState("");
   const [rating, setRating] = useState(0.0);
-  const netPrice = Math.max(price - discAmount, 0);
+  const [netPrice, setNetPrice] = useState(0);
+  // const netPrice = Math.max(price - discAmount, 0);
 
   // const discountedPrice = Math.max(originalPrice - discountAmount, 0);
   // const calculatedDiscountPercentage = originalPrice > 0 ? (discountAmount / originalPrice) * 100 : 0;
@@ -44,20 +47,44 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
       setCategory(editItem.category);
       setImageUrl(editItem.imageUrl);
       setRating(editItem.rating);
+      setNetPrice(editItem.netPrice);
     }
   }, [editItem]);
 
-
+  const handlePriceChange = (amount) => {
+    setPrice(amount);
+  
+    if (discAmount > 0) {
+      // Recalculate discount percentage & net price if discAmount is set
+      const newPercent = amount > 0 ? (discAmount / amount) * 100 : 0;
+      setDiscPercent(Number(newPercent.toFixed(2)));
+      setNetPrice(Number((amount - discAmount).toFixed(2)));
+    } else if (discPercent > 0) {
+      // Recalculate discount amount & net price if discPercent is set
+      const newAmount = amount * (discPercent / 100);
+      setDiscAmount(Number(newAmount.toFixed(2)));
+      setNetPrice(Number((amount - newAmount).toFixed(2)));
+    } else {
+      // If no discount exists, net price is just the price
+      setNetPrice(amount);
+    }
+  };
+  
   const handleDiscountAmountChange = (amount) => {
-    setDiscAmount(amount);
-    setDiscPercent(amount > 0 ? (amount / price) * 100 : 0);
+    const validAmount = allowExtraDiscount ? amount : Math.min(amount, price);
+    setDiscAmount(validAmount);
+    const calculatedPercent = price > 0 ? (validAmount / price) * 100 : 0;
+    setDiscPercent(Number(calculatedPercent.toFixed(2)));
+    setNetPrice(Number((price - validAmount).toFixed(2)));
   };
-
+  
   const handleDiscountPercentageChange = (percentage) => {
-    setDiscPercent(percentage);
-    setDiscAmount(price * (percentage / 100));
+    const validPercentage = allowExtraDiscount ? percentage : Math.min(percentage, 100);
+    setDiscPercent(validPercentage);
+    const calculatedAmount = price * (validPercentage / 100);
+    setDiscAmount(Number(calculatedAmount.toFixed(2)));
+    setNetPrice(Number((price - calculatedAmount).toFixed(2)));
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -153,9 +180,9 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
               </Label>
               <Input
                 id="price"
-                type="number"
+                // type="number"
                 value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) => handlePriceChange(Number(e.target.value))}
                 className="col-span-3"
               />
             </div>
@@ -165,7 +192,7 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
               </Label>
               <Input
                 id="discAmount"
-                type="number"
+                // type="number"
                 value={discAmount}
                 onChange={(e) =>
                   handleDiscountAmountChange(Number(e.target.value))
@@ -179,7 +206,7 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
               </Label>
               <Input
                 id="discPercent"
-                type="number"
+                // type="number"
                 value={discPercent}
                 onChange={(e) =>
                   handleDiscountPercentageChange(Number(e.target.value))
@@ -193,16 +220,35 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
               </Label>
               <Input
                 id="netPrice"
-                type="number"
+                // type="number"
                 value={netPrice}
                 readOnly
                 className="col-span-3"
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex w-full">
+            <div className="flex items-center gap-2 mr-auto">
+              <Checkbox
+                id="allowExtraDiscount"
+                checked={allowExtraDiscount}
+                onCheckedChange={(checked) => {
+                  setAllowExtraDiscount(checked);
+                  if (!checked && netPrice < 0) {
+                    setNetPrice(0);
+                  }
+                }}
+              />
+              <label
+                htmlFor="allowExtraDiscount"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Allow Extra Discount
+              </label>
+            </div>
             <Button type="submit">{editItem ? "Update Item" : "Create Item"}</Button>
           </DialogFooter>
+                        
         </form>
       </DialogContent>
     </Dialog>

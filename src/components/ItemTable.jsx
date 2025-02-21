@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeItem } from "../features/item/itemSlice";
 import { CreateItemDialog } from "@/components/CreateItemDialog";
 
 import {
@@ -47,6 +48,8 @@ import {
 
 
   export function ItemTable() {
+    const dispatch = useDispatch();
+
     const itemsData = useSelector((state) => state.items.items) || [];
     const [dialogOpen, setDialogOpen] = useState(false); 
     const [selectedItem, setSelectedItem] = useState(null); // for delete or edit
@@ -108,14 +111,7 @@ import {
     ];
   
     const handleDelete = (selectedItem) => {
-      setData((prevData) => prevData.filter((item) => item.id !== selectedItem.id));
-      toast("Item Delete Clicked...", {
-        description: "No Description",
-        action: {
-          label: "Ok",
-          onClick: () => console.log("Button Item Delete Clicked"),
-        },
-      })
+      dispatch(removeItem(selectedItem.id));
     };
 
     const handleEdit = (selectedItem) => {
