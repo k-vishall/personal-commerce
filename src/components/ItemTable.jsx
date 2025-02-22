@@ -3,6 +3,7 @@ import { toast } from "sonner"
 import { useDispatch, useSelector } from "react-redux";
 import { removeItem } from "../features/item/itemSlice";
 import { CreateItemDialog } from "@/components/CreateItemDialog";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 import {
   flexRender,
@@ -50,6 +51,7 @@ import {
   export function ItemTable() {
     const dispatch = useDispatch();
 
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const itemsData = useSelector((state) => state.items.items) || [];
     const [dialogOpen, setDialogOpen] = useState(false); 
     const [selectedItem, setSelectedItem] = useState(null); // for delete or edit
@@ -84,6 +86,7 @@ import {
       { accessorKey: "discAmount", header: "Discount Amount", cell: ({ row }) => `$${row.original.discAmount}` },
       { accessorKey: "netPrice", header: "Net Price", cell: ({ row }) => `$${row.original.netPrice}` },
       { accessorKey: "category", header: "Category",cell: ({ row }) => row.original.category,},
+      { accessorKey: "quantity", header: "Stock", cell: ({ row }) => row.original.quantity },
       {
         id: "editAction",
         header: "Edit",
@@ -100,18 +103,40 @@ import {
         id: "deleteAction",
         header: "Delete",
         cell: ({ row }) => (
-          <Button
-            variant="destructive"
-            onClick={() => handleDelete(row.original)}
-          >
-            <Trash2 />
-          </Button>
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" onClick={() => handleDelete(row.original)}>
+                <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete <strong>{selectedItem?.name}</strong>? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ),
       },
     ];
-  
-    const handleDelete = (selectedItem) => {
-      dispatch(removeItem(selectedItem.id));
+
+    const confirmDelete = () => {
+      if (selectedItem) {
+        dispatch(removeItem(selectedItem.id));
+        toast.success("Item deleted successfully!");
+      }
+      setDeleteDialogOpen(false);
+    };
+    
+    const handleDelete = (item) => {
+      setSelectedItem(item);
+      setDeleteDialogOpen(true);
     };
 
     const handleEdit = (selectedItem) => {
@@ -241,6 +266,7 @@ import {
                 <PaginationPrevious
                   href="#"
                   onClick={() => setPageIndex(Math.max(pageIndex - 1, 0))}
+                  disabled={pageIndex === 0}
                 />
               </PaginationItem>
 
@@ -277,6 +303,7 @@ import {
                       )
                     )
                   }
+                  disabled={pageIndex >= Math.ceil(data.length / pageSize) - 1}
                 />
               </PaginationItem>
             </PaginationContent>

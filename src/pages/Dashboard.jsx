@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ItemCardWithImg } from "../components/item-card-with-img";
+import { ItemCardWithImg } from "../components/ItemCardWithImg";
 import { BannerCarousel } from "../components/BannerCarousel";
 import { useSelector } from "react-redux";
 

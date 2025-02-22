@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { ItemModel } from "@/models/itemModel";
 
 const itemData = [
   {
@@ -55,28 +56,15 @@ const itemData = [
   },
 ];
 
-const emptyItem = {
-  id: 0,
-  name: "",
-  desc: "",
-  price: 0,
-  discPercent: 0,
-  discAmount: 0,
-  netPrice: 0,
-  category: "Pizza",
-  imageUrl: "",
-  rating: 0.0,
-};
-
 const itemSlice = createSlice({
   name: "items",
   initialState: {
-    items: itemData,
-    currentItem: emptyItem,
+    items: itemData.map((item) => ({ ...ItemModel, ...item })),
+    currentItem: { ...ItemModel },
   },
   reducers: {
     addItem: (state, action) => {
-      state.items.push(action.payload);
+      state.items.push({ ...ItemModel, ...action.payload });
       console.log(JSON.stringify(state.items));
     },
     updateItem: (state, action) => {
@@ -85,16 +73,17 @@ const itemSlice = createSlice({
       state.items = state.items.map((item) =>
         item.id === id ? { ...item, ...newItem } : item
       );
+      console.log(JSON.stringify(state.items));
     },
     removeItem: (state, action) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
       console.log(JSON.stringify(state.items));
     },
     setCurrentItem: (state, action) => {
-      state.currentItem = action.payload;
+      state.currentItem = { ...ItemModel, ...action.payload };
     },
     resetCurrentItem: (state) => {
-      state.currentItem = emptyItem;
+      state.currentItem = { ...ItemModel };
     },
   },
 });

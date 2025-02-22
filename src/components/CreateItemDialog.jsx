@@ -32,22 +32,23 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
   const [imageUrl, setImageUrl] = useState("");
   const [rating, setRating] = useState(0.0);
   const [netPrice, setNetPrice] = useState(0);
-  // const netPrice = Math.max(price - discAmount, 0);
+  const [quantity, setQuantity] = useState(0);
 
   // const discountedPrice = Math.max(originalPrice - discountAmount, 0);
   // const calculatedDiscountPercentage = originalPrice > 0 ? (discountAmount / originalPrice) * 100 : 0;
   
   useEffect(() => {
     if (editItem) {
-      setName(editItem.name);
-      setDesc(editItem.desc);
-      setPrice(editItem.price);
-      setDiscAmount(editItem.discAmount);
-      setDiscPercent(editItem.discPercent);
-      setCategory(editItem.category);
-      setImageUrl(editItem.imageUrl);
-      setRating(editItem.rating);
-      setNetPrice(editItem.netPrice);
+      setName(editItem.name || "");
+      setDesc(editItem.desc || "");
+      setPrice(editItem.price || 0);
+      setDiscAmount(editItem.discAmount || 0);
+      setDiscPercent(editItem.discPercent || 0);
+      setCategory(editItem.category || "Pizza");
+      setImageUrl(editItem.imageUrl || "");
+      setRating(editItem.rating || 0.0);
+      setNetPrice(editItem.netPrice || 0);
+      setQuantity(editItem.quantity || 0);
     }
   }, [editItem]);
 
@@ -99,6 +100,7 @@ export function CreateItemDialog({ open, setOpen, editItem = null }) {
       category,
       imageUrl,
       rating: editItem ? editItem.rating : 4.0,
+      quantity,
     };
 
     if (editItem) {

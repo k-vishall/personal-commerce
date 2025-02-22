@@ -4,15 +4,17 @@ import { Minus, Plus, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useDispatch } from "react-redux"
+import { updateItem } from "@/features/item/itemSlice"
+import { ItemModel } from "@/models/itemModel"
 
 export function ItemCardWithImg({ product, className, ...props }) {
-  const [quantity, setQuantity] = useState(0)
+  const dispatch = useDispatch();
 
-  const incrementQuantity = () => setQuantity((prev) => prev + 1)
-  const decrementQuantity = () => setQuantity((prev) => Math.max(0, prev - 1))
-
-  // Destructure product details with fallback values in case of null or undefined
+  if (!product) return null;
+  
   const {
+    id = 0,
     name = "Product Name",
     desc = "Product Description",
     price = 0,
@@ -21,8 +23,19 @@ export function ItemCardWithImg({ product, className, ...props }) {
     netPrice= 0,
     category = "Un categorized",
     imageUrl = "/placeholder.svg?height=300&width=300",
-    rating = 0
-  } = product || {}
+    rating = 0,
+    quantity = 0,
+  } = product;
+
+  const incrementQuantity = () => {
+    dispatch(updateItem({ id, newItem: { quantity: quantity + 1 } }));
+  };
+
+  const decrementQuantity = () => {
+    if (quantity > 0) {
+      dispatch(updateItem({ id, newItem: { quantity: quantity - 1 } }));
+    }
+  };
 
   return (
     <Card className={`w-[300px] flex flex-col overflow-hidden ${className}`} {...props}>
