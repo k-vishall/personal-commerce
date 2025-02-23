@@ -3,6 +3,7 @@ import { toast } from "sonner"
 import { useDispatch, useSelector } from "react-redux";
 import { removeCategory } from "../features/category/categorySlice";
 import { CreateCategoryDialog } from "@/components/CreateCategoryDialog";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import {
   flexRender,
   getCoreRowModel,
@@ -48,6 +49,7 @@ import {
   export function CategoryTable() {
     const dispatch = useDispatch();
 
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const categoriesData = useSelector((state) => state.categories.categories) || [];
     const [dialogOpen, setDialogOpen] = useState(false); 
     const [selectedCategory, setSelectedCategory] = useState(null); // for delete or edit
@@ -94,18 +96,40 @@ import {
         id: "deleteAction",
         header: "Delete",
         cell: ({ row }) => (
-          <Button
-            variant="destructive"
-            onClick={() => handleDelete(row.original)}
-          >
-            <Trash2 />
-          </Button>
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" onClick={() => handleDelete(row.original)}>
+                <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete <strong>{selectedCategory?.name}</strong>? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ),
       },
     ];
-  
-    const handleDelete = (selectedCategory) => {
-      dispatch(removeCategory(selectedCategory.id));
+    
+    const confirmDelete = () => {
+      if (selectedCategory) {
+        dispatch(removeCategory(selectedCategory.id));
+        toast.success("Category deleted successfully!");
+      }
+      setDeleteDialogOpen(false);
+    };
+
+    const handleDelete = (cat) => {
+      setSelectedCategory(cat);
+      setDeleteDialogOpen(true);
     };
 
     const handleEdit = (selectedCategory) => {
