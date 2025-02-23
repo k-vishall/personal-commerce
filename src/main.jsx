@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import CreateItem from './pages/CreateItem';
 import CreateCategory from './pages/CreateCategory';
+import Cart from './pages/Cart';
 import Navbar from "./components/Navbar";
 import { Toaster } from "./components/ui/sonner";
 import About from "./pages/About";
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/createItem" element={<CreateItem />} />
         <Route path="/createCategory" element={<CreateCategory />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </BrowserRouter>
     <Toaster />

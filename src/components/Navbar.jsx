@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Menu, Home, Info, Briefcase, Mail } from "lucide-react";
+import { Menu, Home, Info, Briefcase, Mail,ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom"; 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,6 @@ import lightLogo from '/wolf-light.png'
 import darkLogo from '/wolf-dark.png'
 import { NavUser } from "./NavUser";
 import ThemeToggle from "@/components/ThemeToggle";
-
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -94,6 +93,7 @@ export default function Navbar() {
 
       {/* User */}
       <div className="flex items-center space-x-4">
+        <Button variant="ghost" onClick={() => navigate("/cart")}><ShoppingCart/></Button>
         <ThemeToggle />
         <NavUser />
       </div>

@@ -31,10 +31,6 @@ import { useNavigate } from "react-router-dom";
 export function NavUser() {
   const navigate = useNavigate();
 
-  const handleOrdersClick = () => {
-    console.log("Redirecting to Orders...");
-  };
-
   const handleWishlistClick = () => {
     console.log("Redirecting to Wish List...");
   };
@@ -68,7 +64,7 @@ export function NavUser() {
             <ChartBarStacked /> Create Category
             <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleOrdersClick}>
+          <DropdownMenuItem onClick={() => navigate("/cart")}>
             <ShoppingCart/> Cart
             <DropdownMenuShortcut>⇧⌘O</DropdownMenuShortcut>
           </DropdownMenuItem>
