@@ -10,8 +10,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                withCredentials([string(credentialsId: 'git-token', variable: 'GIT_TOKEN')]) {
-                    sh 'git clone https://oauth2:$GIT_TOKEN@github.com/k-vishall/personal-commerce.git'
+                git 'https://github.com/k-vishall/personal-commerce.git'
             }
         }
 
