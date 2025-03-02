@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git clone https://github.com/k-vishall/personal-commerce.git
+                git 'https://github.com/k-vishall/personal-commerce.git'
             }
         }
 
